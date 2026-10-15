@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090b18">
+    <title>Kalkulator Persegi Panjang</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #090b18;
+            color: #f5f6ff;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            --muted: #9b9fb9;
+            --cyan: #65f4e2;
+            --purple: #a58bff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            background:
+                radial-gradient(ellipse at 13% 15%, #25205688, transparent 34rem),
+                radial-gradient(ellipse at 92% 88%, #064e4a55, transparent 32rem),
+                #090b18;
+        }
+
+        body::before {
+            position: fixed;
+            z-index: -1;
+            inset: 0;
+            background-image: linear-gradient(#ffffff08 1px, transparent 1px), linear-gradient(90deg, #ffffff08 1px, transparent 1px);
+            background-size: 48px 48px;
+            content: "";
+            mask-image: linear-gradient(to bottom, black, transparent 85%);
+        }
+
+        .page {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 54px 0 40px;
+        }
+
+        .topline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--cyan);
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .topline::before {
+            width: 24px;
+            height: 2px;
+            background: var(--cyan);
+            box-shadow: 0 0 14px var(--cyan);
+            content: "";
+        }
+
+        h1 {
+            max-width: 760px;
+            margin: 16px 0 12px;
+            font-size: clamp(2.4rem, 6vw, 5rem);
+            letter-spacing: -0.065em;
+            line-height: 0.98;
+        }
+
+        h1 span {
+            color: transparent;
+            background: linear-gradient(100deg, var(--cyan), #9c9aff 75%);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+
+        .intro {
+            max-width: 600px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.02rem;
+            line-height: 1.7;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(290px, 0.78fr) minmax(0, 1.22fr);
+            gap: 22px;
+            margin-top: 38px;
+        }
+
+        .panel {
+            border: 1px solid #ffffff16;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #171a2beF, #101321f2);
+            box-shadow: 0 24px 80px #00000038, inset 0 1px #ffffff0c;
+        }
+
+        .form-panel {
+            padding: 28px;
+        }
+
+        .section-kicker {
+            margin: 0 0 7px;
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.35rem;
+            letter-spacing: -0.03em;
+        }
+
+        .fields {
+            display: grid;
+            gap: 19px;
+            margin-top: 26px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            color: #e3e4f1;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            height: 56px;
+            padding: 0 58px 0 16px;
+            border: 1px solid #ffffff20;
+            border-radius: 13px;
+            outline: none;
+            background: #0c0e1a;
+            color: #fff;
+            font: inherit;
+            font-size: 1.1rem;
+            transition: border-color 180ms ease, box-shadow 180ms ease;
+        }
+
+        input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px #65f4e21c;
+        }
+
+        .unit {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .hint {
+            margin: 8px 0 0;
+            color: #858aa6;
+            font-size: 0.77rem;
+        }
+
+        .calculate {
+            display: flex;
+            width: 100%;
+            min-height: 54px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(100deg, #5ff0dd, #a2a0ff);
+            color: #101222;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 850;
+            transition: transform 180ms ease, filter 180ms ease;
+        }
+
+        .calculate:hover {
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+        }
+
+        .calculate:active {
+            transform: translateY(0);
+        }
+
+        .calculate:focus-visible {
+            outline: 3px solid white;
+            outline-offset: 3px;
+        }
+
+        .error {
+            min-height: 1.35em;
+            margin: 12px 0 0;
+            color: #ff8eaa;
+            font-size: 0.83rem;
+        }
+
+        .visual-panel {
+            display: flex;
+            min-height: 390px;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 26px;
+        }
+
+        .visual-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 11px;
+            border: 1px solid #65f4e22b;
+            border-radius: 999px;
+            background: #65f4e20b;
+            color: var(--cyan);
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .live-badge::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+            content: "";
+        }
+
+        .drawing {
+            width: 100%;
+            height: 260px;
+            overflow: visible;
+        }
+
+        .shape {
+            fill: url(#shapeFill);
+            stroke: var(--cyan);
+            stroke-width: 2;
+            filter: drop-shadow(0 0 13px #65f4e255);
+            transition: all 350ms cubic-bezier(.2, .8, .2, 1);
+        }
+
+        .perimeter-line {
+            fill: none;
+            stroke: #a58bff;
+            stroke-dasharray: 8 8;
+            stroke-width: 2;
+            animation: dash 18s linear infinite;
+        }
+
+        .dimension-line {
+            stroke: #d4d2ff;
+            stroke-width: 1.4;
+        }
+
+        .dimension-text {
+            fill: #f1f0ff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .dimension-caption {
+            fill: #aaaac4;
+            font-family: inherit;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+        }
+
+        .visual-footnote {
+            margin: -2px 0 0;
+            color: #9297b2;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 22px;
+        }
+
+        .result-card {
+            position: relative;
+            min-height: 150px;
+            overflow: hidden;
+            padding: 22px 24px;
+        }
+
+        .result-card::after {
+            position: absolute;
+            top: -34px;
+            right: -26px;
+            width: 110px;
+            height: 110px;
+            border: 1px solid #ffffff10;
+            border-radius: 30px;
+            content: "";
+            transform: rotate(32deg);
+        }
+
+        .result-label {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .result-value {
+            display: block;
+            margin-top: 11px;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-variant-numeric: tabular-nums;
+            font-weight: 850;
+            letter-spacing: -0.055em;
+            line-height: 1;
+        }
+
+        .area .result-value {
+            color: var(--cyan);
+        }
+
+        .perimeter .result-value {
+            color: #b6a3ff;
+        }
+
+        .result-unit {
+            margin-left: 5px;
+            color: #d0d1e0;
+            font-size: 0.93rem;
+            font-weight: 650;
+            letter-spacing: 0;
+        }
+
+        .formula {
+            margin: 10px 0 0;
+            color: #858aa6;
+            font-size: 0.77rem;
+        }
+
+        footer {
+            margin-top: 25px;
+            color: #6f748e;
+            font-size: 0.76rem;
+            text-align: center;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -160;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .page {
+                width: min(560px, calc(100% - 30px));
+                padding-top: 36px;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+                margin-top: 27px;
+            }
+
+            .visual-panel {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .form-panel,
+            .visual-panel {
+                padding: 21px;
+            }
+
+            .results {
+                gap: 10px;
+            }
+
+            .result-card {
+                min-height: 135px;
+                padding: 18px 16px;
+            }
+
+            .drawing {
+                height: 220px;
+            }
+
+            .live-badge {
+                padding: 7px 9px;
+                font-size: 0.62rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <div class="topline">Geometry lab · 01</div>
+        <h1>Hitung bentuk.<br><span>Lihat hasilnya.</span></h1>
+        <p class="intro">Masukkan ukuran persegi panjang dan lihat luas serta kelilingnya berubah secara langsung. Matematika, tapi dibuat lebih seru.</p>
+
+        <section class="workspace" aria-label="Kalkulator persegi panjang">
+            <form class="panel form-panel" id="calculator">
+                <p class="section-kicker">Masukkan ukuran</p>
+                <h2>Berapa dimensinya?</h2>
+
+                <div class="fields">
+                    <div>
+                        <label for="panjang">Panjang</label>
+                        <div class="input-wrap">
+                            <input id="panjang" name="panjang" type="number" min="0.01" step="any" value="20" required inputmode="decimal">
+                            <span class="unit">meter</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="lebar">Lebar</label>
+                        <div class="input-wrap">
+                            <input id="lebar" name="lebar" type="number" min="0.01" step="any" value="5" required inputmode="decimal">
+                            <span class="unit">meter</span>
+                        </div>
+                        <p class="hint">Gunakan angka lebih dari 0, boleh pakai desimal.</p>
+                    </div>
+                </div>
+
+                <button class="calculate" type="submit">
+                    <span aria-hidden="true">✦</span>
+                    Hitung sekarang
+                </button>
+                <p class="error" id="error" role="alert" aria-live="polite"></p>
+            </form>
+
+            <section class="panel visual-panel" aria-label="Visualisasi persegi panjang">
+                <div class="visual-heading">
+                    <div>
+                        <p class="section-kicker">Visualisasi langsung</p>
+                        <h2>Ini bentuknya</h2>
+                    </div>
+                    <span class="live-badge">LIVE PREVIEW</span>
+                </div>
+
+                <svg class="drawing" viewBox="0 0 520 280" role="img" aria-labelledby="visual-title visual-desc">
+                    <title id="visual-title">Visualisasi persegi panjang</title>
+                    <desc id="visual-desc">Persegi panjang dengan panjang 20 meter dan lebar 5 meter.</desc>
+                    <defs>
+                        <linearGradient id="shapeFill" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#65f4e2" stop-opacity=".24"></stop>
+                            <stop offset="100%" stop-color="#a58bff" stop-opacity=".13"></stop>
+                        </linearGradient>
+                        <pattern id="shapeGrid" width="22" height="22" patternUnits="userSpaceOnUse">
+                            <path d="M 22 0 L 0 0 0 22" fill="none" stroke="#c8fff8" stroke-opacity=".12" stroke-width="1"></path>
+                        </pattern>
+                    </defs>
+                    <path class="perimeter-line" d="M 94 67 H 426 V 213 H 94 Z"></path>
+                    <rect class="shape" id="rectangle" x="100" y="73" width="320" height="134" rx="3"></rect>
+                    <rect id="shapeGrid" x="100" y="73" width="320" height="134" rx="3" fill="url(#shapeGrid)" pointer-events="none"></rect>
+                    <line class="dimension-line" id="length-line" x1="100" y1="235" x2="420" y2="235"></line>
+                    <path class="dimension-line" id="length-ticks" d="M 100 230 L 100 240 M 420 230 L 420 240"></path>
+                    <text class="dimension-caption" x="260" y="255" text-anchor="middle">PANJANG</text>
+                    <text class="dimension-text" id="length-label" x="260" y="226" text-anchor="middle">20 m</text>
+                    <line class="dimension-line" id="width-line" x1="447" y1="73" x2="447" y2="207"></line>
+                    <path class="dimension-line" id="width-ticks" d="M 442 73 L 452 73 M 442 207 L 452 207"></path>
+                    <text class="dimension-caption" x="468" y="142" text-anchor="middle" transform="rotate(90 468 142)">LEBAR</text>
+                    <text class="dimension-text" id="width-label" x="438" y="143" text-anchor="end">5 m</text>
+                </svg>
+                <p class="visual-footnote">Garis putus-putus menandai keliling persegi panjang.</p>
+            </section>
+        </section>
+
+        <section class="results" aria-label="Hasil perhitungan" aria-live="polite">
+            <article class="panel result-card area">
+                <p class="result-label">Luas</p>
+                <strong class="result-value"><span id="luas">100</span><span class="result-unit">m²</span></strong>
+                <p class="formula">panjang × lebar</p>
+            </article>
+            <article class="panel result-card perimeter">
+                <p class="result-label">Keliling</p>
+                <strong class="result-value"><span id="keliling">50</span><span class="result-unit">m</span></strong>
+                <p class="formula">2 × (panjang + lebar)</p>
+            </article>
+        </section>
+
+        <footer>Dibuat untuk menjadikan angka terasa nyata ✦</footer>
+    </main>
+
+    <script>
+        const form = document.getElementById("calculator");
+        const panjangInput = document.getElementById("panjang");
+        const lebarInput = document.getElementById("lebar");
+        const error = document.getElementById("error");
+        const rectangle = document.getElementById("rectangle");
+        const shapeGrid = document.getElementById("shapeGrid");
+        const numberFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 4 });
+
+        function updateCalculator() {
+            const panjang = Number(panjangInput.value);
+            const lebar = Number(lebarInput.value);
+
+            if (!Number.isFinite(panjang) || !Number.isFinite(lebar) || panjang <= 0 || lebar <= 0) {
+                error.textContent = "Panjang dan lebar harus berupa angka lebih dari 0.";
+                return false;
+            }
+
+            error.textContent = "";
+            document.getElementById("luas").textContent = numberFormat.format(panjang * lebar);
+            document.getElementById("keliling").textContent = numberFormat.format(2 * (panjang + lebar));
+            document.getElementById("length-label").textContent = `${numberFormat.format(panjang)} m`;
+            document.getElementById("width-label").textContent = `${numberFormat.format(lebar)} m`;
+            document.getElementById("visual-desc").textContent =
+                `Persegi panjang dengan panjang ${numberFormat.format(panjang)} meter dan lebar ${numberFormat.format(lebar)} meter.`;
+
+            const maxWidth = 320;
+            const maxHeight = 134;
+            const scale = Math.min(maxWidth / panjang, maxHeight / lebar);
+            const visualWidth = Math.max(46, panjang * scale);
+            const visualHeight = Math.max(34, lebar * scale);
+            const x = 260 - visualWidth / 2;
+            const y = 140 - visualHeight / 2;
+
+            rectangle.setAttribute("x", x);
+            rectangle.setAttribute("y", y);
+            rectangle.setAttribute("width", visualWidth);
+            rectangle.setAttribute("height", visualHeight);
+            shapeGrid.setAttribute("x", x);
+            shapeGrid.setAttribute("y", y);
+            shapeGrid.setAttribute("width", visualWidth);
+            shapeGrid.setAttribute("height", visualHeight);
+
+            const bottom = y + visualHeight;
+            document.querySelector(".perimeter-line").setAttribute(
+                "d",
+                `M ${x - 6} ${y - 6} H ${x + visualWidth + 6} V ${bottom + 6} H ${x - 6} Z`
+            );
+            const lengthLine = document.getElementById("length-line");
+            const widthLine = document.getElementById("width-line");
+            lengthLine.setAttribute("x1", x);
+            lengthLine.setAttribute("x2", x + visualWidth);
+            lengthLine.setAttribute("y1", bottom + 28);
+            lengthLine.setAttribute("y2", bottom + 28);
+            const lengthTicks = document.getElementById("length-ticks");
+            lengthTicks.setAttribute("d", `M ${x} ${bottom + 23} V ${bottom + 33} M ${x + visualWidth} ${bottom + 23} V ${bottom + 33}`);
+            document.getElementById("length-label").setAttribute("x", x + visualWidth / 2);
+            document.getElementById("length-label").setAttribute("y", bottom + 19);
+            document.querySelector(".dimension-caption").setAttribute("x", x + visualWidth / 2);
+            widthLine.setAttribute("x1", x + visualWidth + 27);
+            widthLine.setAttribute("x2", x + visualWidth + 27);
+            widthLine.setAttribute("y1", y);
+            widthLine.setAttribute("y2", bottom);
+            const widthTicks = document.getElementById("width-ticks");
+            widthTicks.setAttribute("d", `M ${x + visualWidth + 22} ${y} H ${x + visualWidth + 32} M ${x + visualWidth + 22} ${bottom} H ${x + visualWidth + 32}`);
+            document.getElementById("width-label").setAttribute("x", x + visualWidth + 18);
+            document.getElementById("width-label").setAttribute("y", y + visualHeight / 2 + 5);
+            document.querySelector(".dimension-caption[transform]").setAttribute(
+                "transform",
+                `rotate(90 ${x + visualWidth + 48} ${y + visualHeight / 2})`
+            );
+            document.querySelector(".dimension-caption[transform]").setAttribute("x", x + visualWidth + 48);
+            document.querySelector(".dimension-caption[transform]").setAttribute("y", y + visualHeight / 2);
+            return true;
+        }
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            updateCalculator();
+        });
+
+        form.addEventListener("input", () => {
+            if (panjangInput.value && lebarInput.value) {
+                updateCalculator();
+            }
+        });
+
+        updateCalculator();
+    </script>
+</body>
+</html>
